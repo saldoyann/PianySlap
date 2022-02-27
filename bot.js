@@ -25,7 +25,7 @@ client.on("ready", () => {
 client.on("messageCreate", msg => {
   if(msg.author.bot){
     if(msg.author.username == process.env.BOT_NAME){
-      if(msg.embeds[0].description.indexOf('Bad word usage') > -1)
+      if(msg.embeds[0].description.indexOf(process.env.DESCR) > -1)
         msg.reply(process.env.GIF_SLAP);
     }    
     return;
