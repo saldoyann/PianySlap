@@ -34,9 +34,17 @@ client.on("messageCreate", (msg) => {
     return;
   }
   // 🐦 is a meme from Clyde Rouge and french community
-  if (msg.content.includes("bouird") || msg.content.includes("bouirds")) {
-    msg.react("🐦");
-  }
+  BouirdMeme(msg);
 });
 
 client.login(process.env.BOT_TOKEN);
+
+/* MAIN FUNCTION */
+
+  // 🐦 is a meme from Clyde Rouge and french community
+function BouirdMeme(msg) {
+  let msgContentLower = msg.content.toLowerCase();
+  if (msgContentLower.includes("bouird") || msgContentLower.includes("bouirds")) {
+    msg.react("🐦");
+  }
+}
