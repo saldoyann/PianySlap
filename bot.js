@@ -23,6 +23,7 @@ client.on("ready", () => {
 })
 
 client.on("messageCreate", msg => {
+  // Slap is a meme from N0lito about links in discord
   if(msg.author.bot){
     if(msg.author.username == process.env.BOT_NAME){
       if(msg.embeds[0].description.indexOf(process.env.DESCR) > -1)
