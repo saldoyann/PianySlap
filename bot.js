@@ -26,13 +26,7 @@ client.on("ready", () => {
 
 client.on("messageCreate", (msg) => {
   // Slap is a meme from N0lito about links in discord
-  if (msg.author.bot) {
-    if (msg.author.username == process.env.BOT_NAME) {
-      if (msg.embeds[0].description.indexOf(process.env.DESCR) > -1)
-        msg.reply(process.env.GIF_SLAP);
-    }
-    return;
-  }
+  SlapMeme(msg);
   // 🐦 is a meme from Clyde Rouge and french community
   BouirdMeme(msg);
 });
@@ -40,6 +34,15 @@ client.on("messageCreate", (msg) => {
 client.login(process.env.BOT_TOKEN);
 
 /* MAIN FUNCTION */
+
+// Slap is a meme from N0lito about links in discord
+function SlapMeme(msg) {
+  if (msg.author.bot && (msg.author.username == process.env.BOT_NAME)) {
+    if (msg.embeds[0].description.indexOf(process.env.DESCR) > -1) {
+      msg.reply(process.env.GIF_SLAP);
+    }
+  }
+}
 
   // 🐦 is a meme from Clyde Rouge and french community
 function BouirdMeme(msg) {
