@@ -4,4 +4,4 @@ services:
     image: pianyslap
     container_name: PianySlap
     ports:
-      - "50001:5001"
+      - "5001:5001"
