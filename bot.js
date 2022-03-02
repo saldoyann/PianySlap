@@ -33,7 +33,7 @@ client.on("messageCreate", (msg) => {
     }
     return;
   }
-  // 🐦 is a meme from Clyde le Rouge and french community
+  // 🐦 is a meme from Clyde Rouge and french community
   if (msg.content.includes("bouird") || msg.content.includes("bouirds")) {
     msg.react("🐦");
   }
