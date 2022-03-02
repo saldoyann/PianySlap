@@ -30,6 +30,10 @@ client.on("messageCreate", msg => {
     }    
     return;
   }
+  // 🐦 is a meme from Clyde le Rouge and french community
+  if(msg.content == "bouird") {
+    msg.react('🐦')
+  }
 });
 
 client.login(process.env.BOT_TOKEN)
