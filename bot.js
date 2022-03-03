@@ -37,11 +37,13 @@ function SlapMeme(msg) {
 }
 
 // 🐦 is a meme from Clyde Rouge and french community
+// Clyde Discord id is 657617401583632446
 function BouirdMeme(msg) {
   let msgContentLower = msg.content.toLowerCase();
   if (
     msgContentLower.includes("bouird") ||
-    msgContentLower.includes("bouirds")
+    msgContentLower.includes("bouirds") ||
+    (msgContentLower.includes("morning") && msg.author.id == "657617401583632446")
   ) {
     msg.react("🐦");
   }
