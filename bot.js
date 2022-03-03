@@ -32,6 +32,7 @@ function SlapMeme(msg) {
   if (msg.author.bot && msg.author.username == process.env.BOT_NAME) {
     if (msg.embeds[0].description.indexOf(process.env.DESCR) > -1) {
       msg.reply(process.env.GIF_SLAP);
+      console.log("Piany Slap user!");
     }
   }
 }
@@ -46,5 +47,6 @@ function BouirdMeme(msg) {
     (msgContentLower.includes("morning") && msg.author.id == "657617401583632446")
   ) {
     msg.react("🐦");
+    console.log("React 🐦 to " + msg.author.username + " because says " + msgContentLower)
   }
 }
