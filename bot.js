@@ -20,8 +20,15 @@ app
     );
   });
 
-client.on("ready", () => {
-  console.log("PianySlap Bot is ready to go !");
+// State of bot
+client.once("ready", () => {
+  console.log("PianySlap bot is ready to go !");
+});
+client.once("reconnecting", () => {
+  console.log("Reconnecting!");
+});
+client.once("disconnect", () => {
+  console.log("Disconnect!");
 });
 
 client.on("messageCreate", (msg) => {
