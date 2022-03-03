@@ -3,5 +3,3 @@ services:
   bot:
     image: pianyslap
     container_name: PianySlap
-    ports:
-      - "5001:5001"
