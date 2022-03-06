@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+const fetch = require('node-fetch');
 const Discord = require("discord.js");
 const client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
@@ -21,6 +22,8 @@ client.on("messageCreate", (msg) => {
   SlapMeme(msg);
   // 🐦 is a meme from Clyde Rouge and french community
   BouirdMeme(msg);
+
+  getPianyTrack(msg);
 });
 
 client.login(process.env.BOT_TOKEN);
@@ -48,5 +51,37 @@ function BouirdMeme(msg) {
   ) {
     msg.react("🐦");
     console.log("React 🐦 to " + msg.author.username + " because says " + msgContentLower)
+  }
+}
+
+// GET Track from Pianity
+async function getPianyTrack(msg){
+  if(msg.content.includes('getTrack')){
+    const url = `https://pianity.com/api/graphql`
+    const query = `
+    query { 
+      tracks {
+        results(limit: 10) {
+          id
+        }
+      }
+    }
+  `;
+
+    const options =  {
+      method: "POST",
+      body: JSON.stringify({query}),
+      headers: { "Content-Type": "application/json" } 
+    };
+
+    const results = await fetch(url, options)
+    const tracks = await results.json();
+    
+    for (const prop in tracks){
+      console.log(`${prop}: ${tracks[prop]}`);
+    }
+    /*Object.entries(tracks).forEach(( [key, value]) => {
+        console.log(Object.entries(key));
+    });*/
   }
 }
