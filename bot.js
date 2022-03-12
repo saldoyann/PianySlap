@@ -2,13 +2,24 @@ require("dotenv").config();
 
 const fetch = require('node-fetch');
 const Discord = require("discord.js");
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
 });
 
+const getArtist = new SlashCommandBuilder()
+    .setName('getartist')
+    .setDescription('Get Track(s) from an artist')
+    .addStringOption(option => option
+      .setName('artist')
+      .setDescription('which artist would you ?')
+      .setRequired(true));
+
 // State of bot
-client.once("ready", () => {
+client.on("ready", () => {
   console.log("PianySlap bot is ready to go !");
+  // id du serveur de test : 947211184434733116
+  client.guilds.cache.get('947211184434733116').commands.create(getArtist);
 });
 client.once("reconnecting", () => {
   console.log("Reconnecting!");
@@ -17,13 +28,27 @@ client.once("disconnect", () => {
   console.log("Disconnect!");
 });
 
+client.on("interactionCreate", interact => {
+    if(interact.isCommand()){
+      if(interact.commandName === "getartist"){
+        // TODO : Embed message
+        let artist = interact.options.getString('artist');
+        let artistLower = artist.toLowerCase();
+        let slug = artistLower.split(' ').join('-');
+        let title = getPianyTrack(slug);
+        title
+        .then((v) => 
+          interact.reply(slug+" : "+v)
+        );        
+      } 
+    }
+});
+
 client.on("messageCreate", (msg) => {
   // Slap is a meme from N0lito about links in discord
   SlapMeme(msg);
   // 🐦 is a meme from Clyde Rouge and french community
   BouirdMeme(msg);
-
-  getPianyTrack(msg);
 });
 
 client.login(process.env.BOT_TOKEN);
@@ -55,33 +80,33 @@ function BouirdMeme(msg) {
 }
 
 // GET Track from Pianity
-async function getPianyTrack(msg){
-  if(msg.content.includes('getTrack')){
-    const url = `https://pianity.com/api/graphql`
-    const query = `
-    query { 
-      tracks {
-        results(limit: 10) {
-          id
+async function getPianyTrack(artist){
+  const url = `https://pianity.com/api/graphql`
+  const query = `
+  query { 
+    artists (slug:`+JSON.stringify(artist)+`){
+      name
+      bio
+      tracks{
+        title
+        genres{
+          name
         }
+        duration
+        audioURL
       }
     }
-  `;
-
-    const options =  {
-      method: "POST",
-      body: JSON.stringify({query}),
-      headers: { "Content-Type": "application/json" } 
-    };
-
-    const results = await fetch(url, options)
-    const tracks = await results.json();
-    
-    for (const prop in tracks){
-      console.log(`${prop}: ${tracks[prop]}`);
-    }
-    /*Object.entries(tracks).forEach(( [key, value]) => {
-        console.log(Object.entries(key));
-    });*/
   }
+`;
+
+  const options =  {
+    method: "POST",
+    body: JSON.stringify({query}),
+    headers: { "Content-Type": "application/json" } 
+  };
+
+  const results = await fetch(url, options)
+  const res = await results.json();
+  const trackNames = res.data.artists.map( (track) => track.tracks.map( (inf) => inf.title));
+  return trackNames;
 }
