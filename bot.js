@@ -20,6 +20,7 @@ client.on("ready", () => {
   console.log("PianySlap bot is ready to go !");
   // id du serveur de test : 947211184434733116
   client.guilds.cache.get('947211184434733116').commands.create(getArtist);
+
 });
 client.once("reconnecting", () => {
   console.log("Reconnecting!");
@@ -31,15 +32,29 @@ client.once("disconnect", () => {
 client.on("interactionCreate", interact => {
     if(interact.isCommand()){
       if(interact.commandName === "getartist"){
-        // TODO : Embed message
         let artist = interact.options.getString('artist');
         let artistLower = artist.toLowerCase();
         let slug = artistLower.split(' ').join('-');
         let title = getPianyTrack(slug);
-        title
-        .then((v) => 
-          interact.reply(slug+" : "+v)
-        );        
+        const embed = new Discord.MessageEmbed()
+          .setTitle(artist+" : ")
+          .setColor("#373961");
+        
+        title.then(function(v) {
+          const trackNames = v.data.artists.map( (track) => track.tracks.map( (inf) => inf.title));
+          //console.log(trackNames);
+          trackNames.forEach(function(value) {
+            value.forEach(function(track, index){                
+              embed.addField(index+": ", track, true);
+            });
+          }); 
+        });       
+
+        setTimeout(function(){
+          //console.log(embed);
+          interact.reply({ embeds: [embed] });
+        }, 2000);   
+
       } 
     }
 });
@@ -85,12 +100,10 @@ async function getPianyTrack(artist){
   const query = `
   query { 
     artists (slug:`+JSON.stringify(artist)+`){
-      name
-      bio
       tracks{
         title
-        genres{
-          name
+        releases{
+          rarity
         }
         duration
         audioURL
@@ -107,6 +120,6 @@ async function getPianyTrack(artist){
 
   const results = await fetch(url, options)
   const res = await results.json();
-  const trackNames = res.data.artists.map( (track) => track.tracks.map( (inf) => inf.title));
-  return trackNames;
+
+  return res;
 }
