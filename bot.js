@@ -46,7 +46,7 @@ client.on("interactionCreate", async interact => {
 
         if (query?.data.artists[0]?.tracks.length != 0) {
           embed.addField("\u200B", "All tracks from artist :arrow_heading_down:");
-          query?.data.artists[0]?.tracks.forEach((track, i) => {
+          query?.data.artists[0]?.tracks.forEach((track) => {
             const releases = getReleases(track.releases)
             embed.addField(releases+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', false);
           })
