@@ -37,16 +37,35 @@ client.on("interactionCreate", async interact => {
         const artistSlug = query?.data.artists[0]?.slug;
         const embed = new Discord.MessageEmbed()
               .setTitle(query?.data.artists[0]?.name+" ("+ query?.data.artists[0]?.followersCount +" followers) : ")
-              .setColor("#373961");
+              .setDescription(query?.data.artists[0]?.user.bio)
+              .setColor("#373961")
+              .setThumbnail(query?.data.artists[0]?.user.avatarUrl);
+              
+        // other method to get artistUrl pp
+        //'https://tracks.fra1.digitaloceanspaces.com/'+artistSlug+'/avatar_artist'
 
-        query?.data.artists[0]?.tracks.forEach((track, i) => {
-          embed.addField(i+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', true);
-        })
+        if (query?.data.artists[0]?.tracks.length != 0) {
+          embed.addField("\u200B", "All tracks from artist :arrow_heading_down:");
+          query?.data.artists[0]?.tracks.forEach((track, i) => {
+            const releases = getReleases(track.releases)
+            embed.addField(releases+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', false);
+          })
+        }
+
 
         interact.reply({ embeds: [embed] });   
       } 
     }
 });
+
+function getReleases(releases) {
+  console.log(releases)
+  var text = ""
+  releases.forEach(element => {
+    text += element.rarity + " / "
+  });
+  return text.slice(0, -2)
+}
 
 client.on("messageCreate", (msg) => {
   // Slap is a meme from N0lito about links in discord
@@ -92,10 +111,15 @@ async function getPianyTracks(artist){
       name
       slug
       followersCount
+      user {
+        avatarUrl
+        bio
+      }
       tracks {
         title
         slug
         releases {
+          editions
           rarity
         }
         duration
