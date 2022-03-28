@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const fetch = require('node-fetch');
 const Discord = require("discord.js");
+const { MessageAttachment } = require("discord.js");
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const client = new Discord.Client({
   intents: [Discord.Intents.FLAGS.GUILDS, Discord.Intents.FLAGS.GUILD_MESSAGES],
@@ -32,28 +33,30 @@ client.once("disconnect", () => {
 client.on("interactionCreate", async interact => {
     if(interact.isCommand()){
       if(interact.commandName === "getartist"){
+        const embed = new Discord.MessageEmbed()
         const artist = interact.options.getString('artist');
         const query = await getPianyTracks(artist);
-        const artistSlug = query?.data.artists[0]?.slug;
-        const embed = new Discord.MessageEmbed()
-              .setTitle(query?.data.artists[0]?.name+" ("+ query?.data.artists[0]?.followersCount +" followers) : ")
+        if (query?.data.artists.length == 0) {
+          embed.setTitle("The artist does'nt exist")
+        } else {
+          const artistSlug = query?.data.artists[0]?.slug;
+          embed.setTitle(query?.data.artists[0]?.name+" ("+ query?.data.artists[0]?.followersCount +" followers) : ")
               .setDescription(query?.data.artists[0]?.user.bio)
               .setColor("#373961")
               .setThumbnail(query?.data.artists[0]?.user.avatarUrl)
-              .setFooter({ text: 'by Yann and uPong | help from Lancelot and Wareep', iconURL: 'https://i.imgur.com/AfFp7pu.png' })
-              
-        // other method to get artistUrl pp
-        //'https://tracks.fra1.digitaloceanspaces.com/'+artistSlug+'/avatar_artist'
-
-        if (query?.data.artists[0]?.tracks.length != 0) {
-          embed.addField("\u200B", "All tracks from artist :arrow_heading_down:");
-          query?.data.artists[0]?.tracks.forEach((track) => {
-            const releases = getReleases(track.releases)
-            embed.addField(releases+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', false);
-          })
+              .setFooter({ text: 'by Yann and uPong | help from Lancelot and Wareep', iconURL: 'attachment://pianity_p.png' }) 
+          // other method to get artistUrl pp
+          //'https://tracks.fra1.digitaloceanspaces.com/'+artistSlug+'/avatar_artist'
+          if (query?.data.artists[0]?.tracks.length != 0) {
+            embed.addField("\u200B", "All tracks from artist :arrow_heading_down:");
+            query?.data.artists[0]?.tracks.forEach((track) => {
+              const releases = getReleases(track.releases)
+              embed.addField(releases+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', false);
+            })
+          }
         }
-
-        interact.reply({ embeds: [embed] });   
+        const attachment = new MessageAttachment("img/pianity_p.png")
+        interact.reply({ embeds: [embed], files: [attachment] });   
       } 
     }
 });
