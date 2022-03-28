@@ -29,32 +29,21 @@ client.once("disconnect", () => {
   console.log("Disconnect!");
 });
 
-client.on("interactionCreate", interact => {
+client.on("interactionCreate", async interact => {
     if(interact.isCommand()){
-      if(interact.commandName === "getartist"){
-        let artist = interact.options.getString('artist');
-        let artistLower = artist.toLowerCase();
-        let slug = artistLower.split(' ').join('-');
-        let title = getPianyTrack(slug);
+      if(interact.commandName === "tracks"){
+        const artist = interact.options.getString('artist');
+        const query = await getPianyTracks(artist);
+        const artistSlug = query?.data.artists[0]?.slug;
         const embed = new Discord.MessageEmbed()
-          .setTitle(artist+" : ")
-          .setColor("#373961");
-        
-        title.then(function(v) {
-          const trackNames = v.data.artists.map( (track) => track.tracks.map( (inf) => inf.title));
-          //console.log(trackNames);
-          trackNames.forEach(function(value) {
-            value.forEach(function(track, index){                
-              embed.addField(index+": ", track, true);
-            });
-          }); 
-        });       
+              .setTitle(query?.data.artists[0].name+" : ")
+              .setColor("#373961");
 
-        setTimeout(function(){
-          //console.log(embed);
-          interact.reply({ embeds: [embed] });
-        }, 2000);   
+        query?.data.artists[0]?.tracks.forEach((track, i) => {
+          embed.addField(i+": ", '[' + track.title + '](https://pianity.com/'+artistSlug+'/'+track.slug+')', true);
+        })
 
+        interact.reply({ embeds: [embed] });   
       } 
     }
 });
@@ -95,14 +84,17 @@ function BouirdMeme(msg) {
 }
 
 // GET Track from Pianity
-async function getPianyTrack(artist){
+async function getPianyTracks(artist){
   const url = `https://pianity.com/api/graphql`
   const query = `
   query { 
-    artists (slug:`+JSON.stringify(artist)+`){
-      tracks{
+    artists (searchQuery:`+JSON.stringify(artist)+`){
+      name
+      slug
+      tracks {
         title
-        releases{
+        slug
+        releases {
           rarity
         }
         duration
@@ -120,6 +112,6 @@ async function getPianyTrack(artist){
 
   const results = await fetch(url, options)
   const res = await results.json();
-
+  
   return res;
 }
