@@ -31,12 +31,12 @@ client.once("disconnect", () => {
 
 client.on("interactionCreate", async interact => {
     if(interact.isCommand()){
-      if(interact.commandName === "tracks"){
+      if(interact.commandName === "getartist"){
         const artist = interact.options.getString('artist');
         const query = await getPianyTracks(artist);
         const artistSlug = query?.data.artists[0]?.slug;
         const embed = new Discord.MessageEmbed()
-              .setTitle(query?.data.artists[0].name+" : ")
+              .setTitle(query?.data.artists[0]?.name+" ("+ query?.data.artists[0]?.followersCount +" followers) : ")
               .setColor("#373961");
 
         query?.data.artists[0]?.tracks.forEach((track, i) => {
@@ -91,6 +91,7 @@ async function getPianyTracks(artist){
     artists (searchQuery:`+JSON.stringify(artist)+`){
       name
       slug
+      followersCount
       tracks {
         title
         slug
