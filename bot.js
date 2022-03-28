@@ -39,7 +39,8 @@ client.on("interactionCreate", async interact => {
               .setTitle(query?.data.artists[0]?.name+" ("+ query?.data.artists[0]?.followersCount +" followers) : ")
               .setDescription(query?.data.artists[0]?.user.bio)
               .setColor("#373961")
-              .setThumbnail(query?.data.artists[0]?.user.avatarUrl);
+              .setThumbnail(query?.data.artists[0]?.user.avatarUrl)
+              .setFooter({ text: 'by Yann and uPong | help from Lancelot and Wareep', iconURL: 'https://i.imgur.com/AfFp7pu.png' })
               
         // other method to get artistUrl pp
         //'https://tracks.fra1.digitaloceanspaces.com/'+artistSlug+'/avatar_artist'
