@@ -139,8 +139,6 @@ async function getPianyTracks(artist){
     headers: { "Content-Type": "application/json" } 
   };
 
-  const results = await fetch(url, options)
-  const res = await results.json();
-  
-  return res;
+  const response = await fetch(url, options)
+  return response.json();
 }
