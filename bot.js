@@ -52,17 +52,19 @@ client.on("interactionCreate", async interact => {
           })
         }
 
-
         interact.reply({ embeds: [embed] });   
       } 
     }
 });
 
 function getReleases(releases) {
-  console.log(releases)
   var text = ""
   releases.forEach(element => {
-    text += element.rarity + " / "
+    if (element.soldNfts.size > 0) {
+      text += element.rarity+" ("+element.soldNfts.size+" left) / "
+    } else {
+      text += element.rarity+" / "
+    }
   });
   return text.slice(0, -2)
 }
@@ -119,8 +121,10 @@ async function getPianyTracks(artist){
         title
         slug
         releases {
-          editions
           rarity
+          soldNfts: nfts(saleFilter: {activeOrUpcoming: true}) {
+            size
+          }
         }
         duration
         audioURL
